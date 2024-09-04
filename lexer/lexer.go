@@ -53,20 +53,32 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.COMMA, l.ch)
 	case '+':
 		tok = newToken(token.PLUS, l.ch)
+	case '-':
+		tok = newToken(token.MINUS, l.ch)
+	case '*':
+		tok = newToken(token.ASTERISK, l.ch)
+	case '/':
+		tok = newToken(token.SLASH, l.ch)
+	case '<':
+		tok = newToken(token.LT, l.ch)
+	case '>':
+		tok = newToken(token.GT, l.ch)
 	case '{':
 		tok = newToken(token.LBRACE, l.ch)
 	case '}':
 		tok = newToken(token.RBRACE, l.ch)
+	case '!':
+		tok = newToken(token.BANG, l.ch)
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
 	default:
 		if isLetter(l.ch) {
-			tok.Literal = l.readChunk(isLetter)
+			tok.Literal = l.readWord(isLetter)
 			tok.Type = token.LookupIdent(tok.Literal)
 			return tok
 		} else if isDigit(l.ch) {
-			tok.Literal = l.readChunk(isDigit)
+			tok.Literal = l.readWord(isDigit)
 			tok.Type = token.INT
 			return tok
 		} else {
@@ -80,7 +92,7 @@ func (l *Lexer) NextToken() token.Token {
 
 type identify func(byte) bool
 
-func (l *Lexer) readChunk(identify identify) string {
+func (l *Lexer) readWord(identify identify) string {
 	position := l.position
 	for identify(l.ch) {
 		l.readChar()
